@@ -1,0 +1,10 @@
+CREATE DATABASE blog_nn84;
+USE blog_nn84;
+
+CREATE TABLE blog_users (
+  id VARCHAR(80) NOT NULL PRIMARY KEY,
+  
+  name VARCHAR(80) NOT NULL,
+  email VARCHAR(80) NOT NULL,
+  password VARCHAR(80) NOT NULL
+);
