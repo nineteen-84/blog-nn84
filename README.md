@@ -4,6 +4,8 @@
 
 ## Diagrama de Caso de Uso (ER)
 
+![alt text](backend/src/database/er.png)
+
 ## Requisitos Funcionais (RF):
 
 - [] Deve ser possível...
