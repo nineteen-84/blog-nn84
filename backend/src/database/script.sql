@@ -1,101 +1,98 @@
-CREATE DATABASE NN84_database
+CREATE DATABASE nn84_system;
 
-USE DATABASE NN84_database
+USE nn84_system;
 
-CREATE TABLE users (
+# Tabela para registrar usuários da plataforma
+CREATE TABLE nn84_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(80),
-    email VARCHAR(120),
-    password VARCHAR(255),
-    role ENUM('user', 'admin'),
-    status ENUM('ativado', 'desativado') ,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    
+    name VARCHAR(80) NOT NULL,
+    email VARCHAR(120) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    
+    role ENUM('user', 'admin') NOT NULL,
+    status ENUM('active', 'inactive') NOT NULL,
+    created_at TIMESTAMP NOT NULL 
 );
 
-CREATE TABLE users_profile (
+# Tabela para registar conteúdo do perfil/background do usuário na plataforma
+CREATE TABLE nn84_users_profile (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    photo VARCHAR(255),
-    background VARCHAR(255),
+    
+    profile_url VARCHAR(255), # foto de perfil do usuário
+    background_url VARCHAR(255), # foto de fundo do perfil do usuário
+    
     user_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES nn84_users(id)
 );
 
-CREATE TABLE users_address (
+# Tabela para registrar os posts da plataforma
+CREATE TABLE nn84_posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    cep VARCHAR(10),
-    neighborhood VARCHAR(100),
-    street VARCHAR(120),
-    number VARCHAR(10),
-    city VARCHAR(80),
-    state VARCHAR(2),
-    user_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-CREATE TABLE posts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    
     title VARCHAR(150),
-    slug VARCHAR(160),
+    slug VARCHAR(160), # url do produto criada a partir do título 
     body TEXT,
     status ENUM('rascunho', 'publicado'),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    
     user_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(80),
-    slug VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE post_categories (
-    post_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    
     category_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES posts(id),
-    FOREIGN KEY (category_id) REFERENCES categories(id)
+    FOREIGN KEY (category_id) REFERENCES nn84_categories(id)
 );
 
-CREATE TABLE posts_photos (
+# Tabela para registar as imagens da postagem na plataforma
+CREATE TABLE nn84_posts_photos (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    
     path VARCHAR(255),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    
     post_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES posts(id)
+    FOREIGN KEY (post_id) REFERENCES nn84_posts(id)
 );
 
-CREATE TABLE post_views (
+# Tabela para registrar as categorias das postagens na plataforma
+CREATE TABLE nn84_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    post_id INT,
+    
+    name VARCHAR(80),
+    description VARCHAR(255), # estabelece descrição para a categoria
+    status ENUM('active', 'inactive') NOT NULL, # ocultar categoria na plataforma sem precisar deletar
+    
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+# Tabela para registar informações a respeito de uma postagem na plataforma
+CREATE TABLE nn84_post_views (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    
     view_count INT DEFAULT 0,
     like_count INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES posts(id)
+    updated_at TIMESTAMP,
+    
+    post_id INT,
+    FOREIGN KEY (post_id) REFERENCES nn84_posts(id)
 );
 
-CREATE TABLE comments (
+# Tabela para registrar o comentário do usuário referente a postagem
+CREATE TABLE nn84_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    comment_body TEXT,
-    status ENUM('ativado', 'oculto'),
+    
+    comment VARCHAR(255),
+    status ENUM('active', 'inactive'),
+
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    
     post_id INT,
     user_id INT,
-    parent_comment_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES posts(id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (parent_comment_id) REFERENCES comments(id)
+    FOREIGN KEY (post_id) REFERENCES nn84_posts(id),
+    FOREIGN KEY (user_id) REFERENCES nn84_users(id)
 );
 
